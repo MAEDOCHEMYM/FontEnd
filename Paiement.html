@@ -286,6 +286,7 @@ phone.addEventListener('input', detectOperator);
 
 /* ✅ AJOUT : PAIEMENT */
 btnPay.addEventListener('click', async () => {
+amount: document.getElementById('final_amount').value,
 
     const name = document.getElementById('client_name').value.trim();
     let phoneNumber = phone.value.trim().replace(/\s/g, '');

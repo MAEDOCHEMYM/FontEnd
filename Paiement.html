@@ -114,112 +114,157 @@
     </div>
 </div>
 <script>
-    // --- CONFIGURATION ---
-    const API_URL = "/api/pay.php";
 
-    const prefixMap = {
-        "+24381": "VODACOM_MPESA_COD", "+24382": "VODACOM_MPESA_COD", "+24397": "AIRTEL_COD", "+24399": "AIRTEL_COD", "+24389": "ORANGE_COD", "+24385": "ORANGE_COD", "+24380": "AFRICELL_COD",
-        "+22997": "MTN", "+22996": "MTN", "+22995": "MOOV",
-        "+22177": "ORANGE", "+22178": "ORANGE", "+22170": "FREE", "+22176": "TIGO",
-        "+22507": "ORANGE", "+22505": "MTN", "+22501": "MOOV",
-        "+23767": "MTN", "+23769": "ORANGE"
-    };
+const API_URL = "/api/pay.php";
 
-    const phone = document.getElementById('phone');
-    const badge = document.getElementById('badge');
-    const opLabel = document.getElementById('opLabel');
-    const opCodeInput = document.getElementById('op_code');
-    const btnPay = document.getElementById('btnPay');
+/* ✅ Correspondants OFFICIELS Pawapay */
+const prefixMap = {
 
-    document.getElementById('opLogo').style.display = 'none';
+    // 🇨🇩 RDC
+    "+24381": "VODACOM_MPESA_COD",
+    "+24382": "VODACOM_MPESA_COD",
+    "+24383": "VODACOM_MPESA_COD",
+    "+24384": "VODACOM_MPESA_COD",
+    "+24385": "ORANGE_COD",
+    "+24389": "ORANGE_COD",
+    "+24397": "AIRTEL_COD",
+    "+24399": "AIRTEL_COD",
+    "+24380": "AFRICELL_COD",
 
-    function detectOperator() {
-        let input = phone.value.trim().replace(/\s/g, ''); 
-        if (input.length > 2 && !input.startsWith('+')) {
-            input = '+' + input;
-        }
+    // 🇰🇪 Kenya
+    "+2547": "SAFARICOM_KEN",
 
-        let matched = false;
-        for (let prefix in prefixMap) {
-            if (input.startsWith(prefix)) {
-                const operatorName = prefixMap[prefix];
-                opLabel.innerText = operatorName;
-                opCodeInput.value = operatorName === "VODACOM" ? "VODACOM_DRC" : 
-                                   operatorName === "AIRTEL" ? "AIRTEL_DRC" : 
-                                   operatorName === "ORANGE" ? "ORANGE_DRC" : operatorName + "_DRC";
-                badge.classList.add('active');
-                matched = true;
-                break;
-            }
-        }
-        if (!matched) {
-            badge.classList.remove('active');
-            opCodeInput.value = ""; 
+    // 🇺🇬 Ouganda
+    "+25677": "MTN_UGA",
+    "+25678": "MTN_UGA",
+    "+25675": "AIRTEL_UGA",
+    "+25670": "AIRTEL_UGA",
+
+    // 🇹🇿 Tanzanie
+    "+25574": "VODACOM_TZA",
+    "+25575": "VODACOM_TZA",
+    "+25576": "TIGO_TZA",
+    "+25571": "AIRTEL_TZA",
+    "+25565": "TIGO_TZA",
+    "+25567": "HALOTEL_TZA",
+
+    // 🇷🇼 Rwanda
+    "+25078": "MTN_RWA",
+    "+25079": "AIRTEL_RWA",
+
+    // 🇿🇲 Zambie
+    "+26097": "MTN_ZMB",
+    "+26096": "MTN_ZMB",
+    "+26095": "AIRTEL_ZMB",
+    "+26077": "AIRTEL_ZMB",
+    "+26076": "ZAMTEL_ZMB",
+
+    // 🇲🇼 Malawi
+    "+26599": "AIRTEL_MWI",
+    "+26588": "TNM_MWI",
+
+    // 🇲🇿 Mozambique
+    "+25884": "VODACOM_MOZ",
+    "+25885": "VODACOM_MOZ",
+    "+25882": "MOVITEL_MOZ",
+    "+25886": "TMCEL_MOZ",
+
+    // 🇬🇭 Ghana
+    "+23324": "MTN_GHA",
+    "+23354": "MTN_GHA",
+    "+23355": "MTN_GHA",
+    "+23320": "VODAFONE_GHA",
+    "+23350": "AIRTELTIGO_GHA",
+
+    // 🇧🇯 Bénin
+    "+22997": "MTN_BEN",
+    "+22996": "MTN_BEN",
+    "+22995": "MOOV_BEN",
+
+    // 🇨🇮 Côte d’Ivoire
+    "+22507": "ORANGE_CIV",
+    "+22505": "MTN_CIV",
+    "+22501": "MOOV_CIV",
+
+    // 🇸🇳 Sénégal
+    "+22177": "ORANGE_SEN",
+    "+22178": "ORANGE_SEN",
+    "+22176": "EXPRESSO_SEN",
+    "+22170": "FREE_SEN",
+
+    // 🇨🇲 Cameroun
+    "+23767": "MTN_CMR",
+    "+23768": "MTN_CMR",
+    "+23769": "ORANGE_CMR",
+
+    // 🇹🇬 Togo
+    "+22890": "TOGOCEL_TGO",
+    "+22891": "TOGOCEL_TGO",
+    "+22892": "MOOV_TGO",
+
+    // 🇬🇦 Gabon
+    "+24106": "AIRTEL_GAB",
+    "+24107": "MOOV_GAB",
+
+    // 🇨🇬 Congo Brazzaville
+    "+24206": "AIRTEL_COG",
+    "+24205": "MTN_COG",
+
+    // 🇸🇱 Sierra Leone
+    "+23276": "AIRTEL_SLE",
+    "+23277": "AFRICELL_SLE",
+
+    // 🇲🇬 Madagascar
+    "+26134": "AIRTEL_MDG",
+    "+26133": "ORANGE_MDG",
+
+    // 🇪🇹 Éthiopie
+    "+25191": "ETHIOPIA_TELECOM",
+
+    // 🇳🇬 Nigeria
+    "+23480": "MTN_NGA",
+    "+23481": "MTN_NGA",
+    "+23470": "AIRTEL_NGA",
+    "+23490": "AIRTEL_NGA"
+};
+
+const phone = document.getElementById('phone');
+const badge = document.getElementById('badge');
+const opLabel = document.getElementById('opLabel');
+const opCodeInput = document.getElementById('op_code');
+
+/* ✅ Détection opérateur */
+function detectOperator() {
+    let input = phone.value.trim().replace(/\s/g, '');
+
+    if (input.length > 2 && !input.startsWith('+')) {
+        input = '+' + input;
+    }
+
+    let matched = false;
+
+    for (let prefix in prefixMap) {
+        if (input.startsWith(prefix)) {
+            const operatorCode = prefixMap[prefix];
+
+            opLabel.innerText = operatorCode;
+            opCodeInput.value = operatorCode;
+
+            badge.classList.remove('hidden');
+            matched = true;
+            break;
         }
     }
 
-    phone.addEventListener('input', detectOperator);
+    if (!matched) {
+        badge.classList.add('hidden');
+        opCodeInput.value = "";
+    }
+}
 
-    btnPay.addEventListener('click', async () => {
-        const name = document.getElementById('client_name').value.trim();
-        let phoneNumber = phone.value.trim().replace(/\s/g, '');
-        
-        if (phoneNumber && !phoneNumber.startsWith('+')) {
-            phoneNumber = '+' + phoneNumber;
-        }
+phone.addEventListener('input', detectOperator);
 
-        const operatorCode = opCodeInput.value;
-
-        if (!name || !phoneNumber) {
-            alert("Veuillez remplir votre nom et votre numéro.");
-            return;
-        }
-        
-        if (!operatorCode) {
-            alert("Opérateur non reconnu. Vérifiez le préfixe (ex: +243...)");
-            return;
-        }
-
-        // --- GESTION DU TIMEOUT (60 SECONDES) ---
-        btnPay.innerText = "RÉVEIL DU SERVEUR (MAX 1 MIN)...";
-        btnPay.disabled = true;
-
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 secondes d'attente
-
-        try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                signal: controller.signal, // On lie le signal au fetch
-                body: JSON.stringify({
-                    client_name: name,
-                    amount: document.getElementById('final_amount').value,
-                    phone: phoneNumber,
-                    operator: operatorCode,
-                    formation: document.getElementById('formation').value
-                })
-            });
-
-            clearTimeout(timeoutId); // Annuler le timeout si la réponse arrive à temps
-
-            const result = await response.json();
-            if (result.status === 'SUCCESS') {
-                window.location.href = result.redirectUrl;
-            } else {
-                alert("Erreur : " + result.message);
-            }
-        } catch (error) {
-            if (error.name === 'AbortError') {
-                alert("Le serveur gratuit Render met trop de temps à démarrer. Patientez 10 secondes et cliquez à nouveau, il sera réveillé !");
-            } else {
-                alert("Le serveur ne répond pas. Veuillez vérifier votre connexion ou réessayer.");
-            }
-        } finally {
-            btnPay.innerText = "LANCER LE PAIEMENT";
-            btnPay.disabled = false;
-        }
-    });
 </script>
+    
 </body>
 </html>

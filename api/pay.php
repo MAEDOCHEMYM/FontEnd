@@ -2,6 +2,18 @@
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 
+// Générateur UUID (36 caractères)
+function generateUUID() {
+    return sprintf(
+        '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+        mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0x0fff) | 0x4000,
+        mt_rand(0, 0x3fff) | 0x8000,
+        mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+    );
+}
+
 // Récupération des données
 $input = json_decode(file_get_contents('php://input'), true);
 
@@ -11,28 +23,28 @@ if ($input) {
     $amount = $input['amount'] ?? '0';
     $formation = $input['formation'] ?? 'Formation';
     $operator = $input['operator'] ?? '';
-    $ref = "INS-" . time(); 
+
+    // UUID obligatoire (36 caractères)
+    $ref = generateUUID();
 
     // Nettoyage numéro
     $cleanPhone = str_replace([' ', '+'], '', $phone);
 
-    // Date ISO avec timezone (important)
+    // Timestamp ISO avec timezone
     $customerTimestamp = date('Y-m-d\TH:i:sP');
 
     // CONFIG PAWAPAY
-    $apiKey = "eyJraWQiOiIxIiwiYWxnIjoiRVMyNTYifQ.eyJ0dCI6IkFBVCIsInN1YiI6IjE2MTk5IiwibWF2IjoiMSIsImV4cCI6MjA4OTY5OTY3NCwiaWF0IjoxNzc0MDgwNDc0LCJwbSI6IkRBRixQQUYiLCJqdGkiOiI2OTVjZmU5Zi05YWExLTQxNTUtODRjNC0zN2M2MjY1ZTBiNDcifQ.asYDBa_NnVrAtHBubSv5jN3a2y-y0GDBxz3rfDB5TGjUG6rxzwF8WJCJrNALYgPM5TUL-3hCRuFf4EI0cecGYw"; 
+    $apiKey = "eyJraWQiOiIxIiwiYWxnIjoiRVMyNTYifQ.eyJ0dCI6IkFBVCIsInN1YiI6IjE2MTk5IiwibWF2IjoiMSIsImV4cCI6MjA4OTY5OTY3NCwiaWF0IjoxNzc0MDgwNDc0LCJwbSI6IkRBRixQQUYiLCJqdGkiOiI2OTVjZmU5Zi05YWExLTQxNTUtODRjNC0zN2M2MjY1ZTBiNDcifQ.asYDBa_NnVrAtHBubSv5jN3a2y-y0GDBxz3rfDB5TGjUG6rxzwF8WJCJrNALYgPM5TUL-3hCRuFf4EI0cecGYw";
     $apiUrl = "https://api.sandbox.pawapay.cloud/v1/deposits";
 
+    // PAYLOAD COMPLET
     $payload = [
         "depositId" => $ref,
         "amount" => (string)$amount,
         "currency" => "USD",
         "correspondent" => $operator,
 
-        // ✅ NOUVEAU CHAMP OBLIGATOIRE
-        "statementDescription" => "Paiement formation",
-
-        // ✅ TIMESTAMP
+        "statementDescription" => "Formation " . $formation,
         "customerTimestamp" => $customerTimestamp,
 
         "payer" => [

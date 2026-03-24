@@ -235,6 +235,24 @@ const opLabel = document.getElementById('opLabel');
 const opCodeInput = document.getElementById('op_code');
 const btnPay = document.getElementById('btnPay');
 
+const formationSelect = document.getElementById('formation');
+const priceLabel = document.getElementById('priceLabel');
+const finalAmountInput = document.getElementById('final_amount');
+
+// Mettre à jour le prix quand on change de formation
+formationSelect.addEventListener('change', function() {
+    // On récupère l'attribut data-price de l'option choisie
+    const selectedOption = this.options[this.selectedIndex];
+    const price = selectedOption.getAttribute('data-price');
+    
+    // On met à jour l'affichage (le texte 10$ -> 15$)
+    priceLabel.innerText = price + "$";
+    
+    // On met à jour la valeur cachée qui est envoyée au PHP
+    finalAmountInput.value = price;
+});
+
+        
 /* ✅ Détection opérateur */
 function detectOperator() {
     let input = phone.value.trim().replace(/\s/g, '');

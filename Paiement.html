@@ -115,8 +115,6 @@
 
 <script>
     // --- CONFIGURATION ---
-    // Vérifiez bien si votre fichier sur Render est index.php ou pay.php
-    // Si c'est pay.php, ajoutez /pay.php à la fin de l'URL
     const API_URL = "https://mon-api-php-qfzo.onrender.com"; 
 
     const prefixMap = {
@@ -124,12 +122,7 @@
         "+22997": "MTN_BEN", "+22996": "MTN_BEN", "+22995": "MOOV_BEN",
         "+22177": "ORANGE_SN", "+22178": "ORANGE_SN", "+22170": "FREE_SN", "+22176": "TIGO_SN",
         "+22507": "ORANGE_CIV", "+22505": "MTN_CIV", "+22501": "MOOV_CIV",
-        "+23767": "MTN_CMR", "+23769": "ORANGE_CMR",
-        "+25078": "MTN_RWA", "+25072": "AIRTEL_RWA",
-        "+26096": "MTN_ZMB", "+26097": "AIRTEL_ZMB",
-        "+23324": "MTN_GHA", "+23320": "VODAFONE_GHA",
-        "+25677": "MTN_UGA", "+25670": "AIRTEL_UGA",
-        "+25575": "VODACOM_TZA", "+25568": "AIRTEL_TZA"
+        "+23767": "MTN_CMR", "+23769": "ORANGE_CMR"
     };
 
     const phone = document.getElementById('phone');
@@ -137,90 +130,85 @@
     const opLogo = document.getElementById('opLogo');
     const opLabel = document.getElementById('opLabel');
     const opCodeInput = document.getElementById('op_code');
-    const formation = document.getElementById('formation');
-    const priceLabel = document.getElementById('priceLabel');
-    const finalAmount = document.getElementById('final_amount');
     const btnPay = document.getElementById('btnPay');
 
-    // Mise à jour du prix
-    formation.addEventListener('change', () => {
-        const val = formation.options[formation.selectedIndex].dataset.price;
-        priceLabel.innerText = val + "$";
-        finalAmount.value = val;
-    });
+    // FONCTION DE DÉTECTION AMÉLIORÉE
+    function detectOperator() {
+        let input = phone.value.trim().replace(/\s/g, ''); // Enlever espaces
+        
+        // Si l'utilisateur a oublié le +, on l'ajoute pour la vérification
+        if (input.match(/^\d/) && !input.startsWith('+')) {
+            input = '+' + input;
+        }
 
-    // Détection de l'opérateur
-    phone.addEventListener('input', () => {
-        let input = phone.value.replace(/\s/g, '');
         let matched = false;
-
+        // On vérifie les 6 premiers caractères (ex: +24381)
         for (let prefix in prefixMap) {
             if (input.startsWith(prefix)) {
                 const code = prefixMap[prefix];
                 const brand = code.split('_')[0].toLowerCase();
+                
                 opLabel.innerText = brand;
                 opLogo.src = `https://logo.clearbit.com/${brand}.com`;
-                opCodeInput.value = code;
+                opCodeInput.value = code; // On stocke l'opérateur
                 badge.classList.add('active');
                 matched = true;
                 break;
             }
         }
+
         if (!matched) {
             badge.classList.remove('active');
-            opCodeInput.value = ""; // On vide si non reconnu
+            opCodeInput.value = ""; 
         }
-    });
+    }
 
-    // Envoi du paiement
+    phone.addEventListener('input', detectOperator);
+    phone.addEventListener('blur', detectOperator); // Vérifier aussi quand on quitte le champ
+
+    // GESTION DU CLIC
     btnPay.addEventListener('click', async () => {
         const name = document.getElementById('client_name').value.trim();
-        const phoneNumber = phone.value.trim();
+        let phoneNumber = phone.value.trim().replace(/\s/g, '');
+        
+        // Auto-correction du numéro pour l'envoi
+        if (phoneNumber.match(/^\d/) && !phoneNumber.startsWith('+')) {
+            phoneNumber = '+' + phoneNumber;
+        }
+
         const operatorCode = opCodeInput.value;
 
-        // VERIFICATION PRECISE
-        if (!name) {
-            alert("Veuillez entrer votre nom complet.");
-            return;
-        }
-        if (!phoneNumber) {
-            alert("Veuillez entrer votre numéro de téléphone.");
-            return;
-        }
+        if (!name) return alert("Nom complet requis.");
+        if (!phoneNumber) return alert("Numéro requis.");
+        
         if (!operatorCode) {
-            alert("Numéro non reconnu. Assurez-vous de commencer par le préfixe pays (ex: +243...)");
-            return;
+            return alert("Opérateur non détecté. Vérifiez que votre numéro commence par le code pays (ex: +24381...)");
         }
 
-        btnPay.innerText = "CONNEXION AU SERVEUR...";
+        btnPay.innerText = "PATIENTEZ...";
         btnPay.disabled = true;
-
-        const dataToSend = {
-            client_name: name,
-            amount: finalAmount.value,
-            phone: phoneNumber,
-            operator: operatorCode,
-            formation: formation.value
-        };
 
         try {
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dataToSend)
+                body: JSON.stringify({
+                    client_name: name,
+                    amount: document.getElementById('final_amount').value,
+                    phone: phoneNumber,
+                    operator: operatorCode,
+                    formation: document.getElementById('formation').value
+                })
             });
 
-            // On vérifie si la réponse est du JSON valide
             const result = await response.json();
-
             if (result.status === 'SUCCESS' && result.redirectUrl) {
                 window.location.href = result.redirectUrl;
             } else {
-                alert("Erreur: " + (result.message || "Échec de l'opération"));
+                alert("Erreur serveur : " + (result.message || "Échec"));
             }
         } catch (error) {
-            console.error("Erreur:", error);
-            alert("Impossible de joindre le serveur. Vérifiez votre connexion ou l'état de votre API sur Render.");
+            alert("Erreur de connexion au serveur Render.");
         } finally {
             btnPay.innerText = "LANCER LE PAIEMENT";
             btnPay.disabled = false;

@@ -118,39 +118,41 @@
     const API_URL = "https://mon-api-php-qfzo.onrender.com"; 
 
     const prefixMap = {
-        "+24381": "VODACOM_DRC", "+24382": "VODACOM_DRC", "+24397": "AIRTEL_DRC", "+24399": "AIRTEL_DRC", "+24389": "ORANGE_DRC","+24385": "ORANGE_DRC", "+24380": "AFRICELL_DRC",
-        "+22997": "MTN_BEN", "+22996": "MTN_BEN", "+22995": "MOOV_BEN",
-        "+22177": "ORANGE_SN", "+22178": "ORANGE_SN", "+22170": "FREE_SN", "+22176": "TIGO_SN",
-        "+22507": "ORANGE_CIV", "+22505": "MTN_CIV", "+22501": "MOOV_CIV",
-        "+23767": "MTN_CMR", "+23769": "ORANGE_CMR"
+        "+24381": "VODACOM", "+24382": "VODACOM", "+24397": "AIRTEL", "+24399": "AIRTEL", "+24389": "ORANGE", "+24380": "AFRICELL",
+        "+22997": "MTN", "+22996": "MTN", "+22995": "MOOV",
+        "+22177": "ORANGE", "+22178": "ORANGE", "+22170": "FREE", "+22176": "TIGO",
+        "+22507": "ORANGE", "+22505": "MTN", "+22501": "MOOV",
+        "+23767": "MTN", "+23769": "ORANGE"
     };
 
     const phone = document.getElementById('phone');
     const badge = document.getElementById('badge');
-    const opLogo = document.getElementById('opLogo');
     const opLabel = document.getElementById('opLabel');
     const opCodeInput = document.getElementById('op_code');
     const btnPay = document.getElementById('btnPay');
 
-    // FONCTION DE DÉTECTION AMÉLIORÉE
+    // On cache le logo (car on ne veut que le texte)
+    document.getElementById('opLogo').style.display = 'none';
+
     function detectOperator() {
-        let input = phone.value.trim().replace(/\s/g, ''); // Enlever espaces
+        let input = phone.value.trim().replace(/\s/g, ''); 
         
-        // Si l'utilisateur a oublié le +, on l'ajoute pour la vérification
-        if (input.match(/^\d/) && !input.startsWith('+')) {
+        // Ajout automatique du + pour la détection si manquant
+        if (input.length > 2 && !input.startsWith('+')) {
             input = '+' + input;
         }
 
         let matched = false;
-        // On vérifie les 6 premiers caractères (ex: +24381)
         for (let prefix in prefixMap) {
             if (input.startsWith(prefix)) {
-                const code = prefixMap[prefix];
-                const brand = code.split('_')[0].toLowerCase();
+                const operatorName = prefixMap[prefix];
                 
-                opLabel.innerText = brand;
-                opLogo.src = `https://logo.clearbit.com/${brand}.com`;
-                opCodeInput.value = code; // On stocke l'opérateur
+                opLabel.innerText = operatorName;
+                // On garde le code technique pour l'API (ex: VODACOM_DRC)
+                opCodeInput.value = operatorName === "VODACOM" ? "VODACOM_DRC" : 
+                                   operatorName === "AIRTEL" ? "AIRTEL_DRC" : 
+                                   operatorName === "ORANGE" ? "ORANGE_DRC" : operatorName + "_DRC";
+                
                 badge.classList.add('active');
                 matched = true;
                 break;
@@ -164,28 +166,28 @@
     }
 
     phone.addEventListener('input', detectOperator);
-    phone.addEventListener('blur', detectOperator); // Vérifier aussi quand on quitte le champ
 
-    // GESTION DU CLIC
     btnPay.addEventListener('click', async () => {
         const name = document.getElementById('client_name').value.trim();
         let phoneNumber = phone.value.trim().replace(/\s/g, '');
         
-        // Auto-correction du numéro pour l'envoi
-        if (phoneNumber.match(/^\d/) && !phoneNumber.startsWith('+')) {
+        if (phoneNumber && !phoneNumber.startsWith('+')) {
             phoneNumber = '+' + phoneNumber;
         }
 
         const operatorCode = opCodeInput.value;
 
-        if (!name) return alert("Nom complet requis.");
-        if (!phoneNumber) return alert("Numéro requis.");
+        if (!name || !phoneNumber) {
+            alert("Veuillez remplir votre nom et votre numéro.");
+            return;
+        }
         
         if (!operatorCode) {
-            return alert("Opérateur non détecté. Vérifiez que votre numéro commence par le code pays (ex: +24381...)");
+            alert("Opérateur non reconnu. Vérifiez le préfixe (ex: +243...)");
+            return;
         }
 
-        btnPay.innerText = "PATIENTEZ...";
+        btnPay.innerText = "TRAITEMENT EN COURS...";
         btnPay.disabled = true;
 
         try {
@@ -202,13 +204,13 @@
             });
 
             const result = await response.json();
-            if (result.status === 'SUCCESS' && result.redirectUrl) {
+            if (result.status === 'SUCCESS') {
                 window.location.href = result.redirectUrl;
             } else {
-                alert("Erreur serveur : " + (result.message || "Échec"));
+                alert("Erreur : " + result.message);
             }
         } catch (error) {
-            alert("Erreur de connexion au serveur Render.");
+            alert("Le serveur Render ne répond pas. Réessayez dans 30 secondes.");
         } finally {
             btnPay.innerText = "LANCER LE PAIEMENT";
             btnPay.disabled = false;

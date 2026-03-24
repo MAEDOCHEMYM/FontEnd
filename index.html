@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyTech Club | Excellence Numérique</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
+        
+        body { 
+            background-color: #050810; 
+            color: #e2e8f0; 
+            font-family: 'Space Grotesk', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .glass-nav {
+            background: rgba(5, 8, 16, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .hero-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
+        }
+
+        .tech-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.8));
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .tech-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+            transform: translateY(-8px);
+        }
+
+        .glow-text {
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.4);
+            transform: scale(1.05);
+        }
+
+        .badge-soon {
+            background: rgba(249, 115, 22, 0.1);
+            color: #f97316;
+            border: 1px solid rgba(249, 115, 22, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="glass-nav sticky top-0 z-50 px-6 py-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div class="p-1 bg-white rounded-lg">
+                    <img src="LG.png" alt="Logo MyTech" class="h-10 w-auto">
+                </div>
+                <div class="flex flex-col leading-none">
+                    <span class="text-xl font-bold tracking-tight">MYTECH</span>
+                    <span class="text-xs text-blue-500 font-bold tracking-[0.2em]">CLUB</span>
+                </div>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-10 text-sm font-medium tracking-wide">
+                <a href="#expertises" class="hover:text-blue-400 transition">Expertises</a>
+                <a href="#innovation" class="hover:text-blue-400 transition">Innovation</a>
+                <a href="#formations" class="px-5 py-2 bg-white/5 rounded-full border border-white/10 hover:bg-white/10 transition">Lancement 06 Avril</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="relative pt-24 pb-20 hero-gradient">
+        <div class="container mx-auto px-6 text-center">
+            <span class="inline-block px-4 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold mb-6 tracking-widest border border-blue-500/20 uppercase">
+                Expertise & Innovation Numérique
+            </span>
+            <h1 class="text-6xl md:text-8xl font-bold mb-8 tracking-tighter">
+                Former. Servir. <span class="text-blue-500 glow-text">Innover.</span>
+            </h1>
+            <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed font-light">
+                Nous résolvons vos défis technologiques complexes et formons les leaders de demain à travers des programmes d'excellence.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
+                <a href="https://chat.whatsapp.com/DiKmbxdo7qLFWh6Eu8cHEz?mode=gi_t" class="btn-primary text-white px-10 py-4 rounded-2xl font-bold text-lg flex items-center">
+                    Rejoindre le Club <i class="fab fa-whatsapp ml-3"></i>
+                </a>
+                <div class="text-slate-500 text-sm font-medium border-l border-white/10 pl-6 text-left">
+                    +10 Experts Spécialisés<br>
+                    Formations Certifiantes
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="py-20 container mx-auto px-6">
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="tech-card p-10 rounded-[2rem] relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 text-blue-500/10 text-9xl font-bold italic group-hover:text-blue-500/20 transition">01</div>
+                <h3 class="text-2xl font-bold mb-4 flex items-center">
+                    <span class="w-8 h-1 px-4 bg-blue-500 mr-3"></span> Former
+                </h3>
+                <p class="text-slate-400">Initiation poussée au numérique avec des experts spécialisés pour maîtriser les outils de demain.</p>
+            </div>
+            <div class="tech-card p-10 rounded-[2rem] relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 text-orange-500/10 text-9xl font-bold italic group-hover:text-orange-500/20 transition">02</div>
+                <h3 class="text-2xl font-bold mb-4 flex items-center">
+                    <span class="w-8 h-1 px-4 bg-orange-500 mr-3"></span> Servir
+                </h3>
+                <p class="text-slate-400">Maintenance, création de systèmes sur mesure et mise à disposition de personnel technique qualifié.</p>
+            </div>
+            <div class="tech-card p-10 rounded-[2rem] relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 text-green-500/10 text-9xl font-bold italic group-hover:text-green-500/20 transition">03</div>
+                <h3 class="text-2xl font-bold mb-4 flex items-center">
+                    <span class="w-8 h-1 px-4 bg-green-500 mr-3"></span> Innover
+                </h3>
+                <p class="text-slate-400">Recherche et développement de solutions communautaires pour répondre aux besoins globaux.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="expertises" class="py-20">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+                <div class="max-w-xl">
+                    <h2 class="text-4xl font-bold mb-4">Un Hub d'Expertises <span class="text-blue-500">Multidisciplinaire</span></h2>
+                    <p class="text-slate-500 italic">Découvrez nos domaines de spécialisation actuels et futurs.</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="tech-card p-6 rounded-2xl flex items-center space-x-4 border-l-4 border-l-blue-600">
+                    <i class="fas fa-laptop-code text-blue-500"></i> <span class="text-sm font-bold uppercase tracking-wider">Prog. Windows (C#)</span>
+                </div>
+                <div class="tech-card p-6 rounded-2xl flex items-center space-x-4">
+                    <i class="fas fa-mobile-screen text-slate-400"></i> <span class="text-sm font-bold uppercase tracking-wider text-slate-400">Prog. Mobile</span>
+                </div>
+                <div class="tech-card p-6 rounded-2xl flex items-center space-x-4">
+                    <i class="fas fa-globe text-slate-400"></i> <span class="text-sm font-bold uppercase tracking-wider text-slate-400">Prog. Web</span>
+                </div>
+                <div class="tech-card p-6 rounded-2xl flex items-center space-x-4 border-l-4 border-l-green-600">
+                    <i class="fas fa-chart-pie text-green-500"></i> <span class="text-sm font-bold uppercase tracking-wider">Analyse de données</span>
+                </div>
+                <div class="tech-card p-6 rounded-2xl flex items-center space-x-4">
+                    <i class="fas fa-pen-nib text-slate-400"></i> <span class="text-sm font-bold uppercase tracking-wider text-slate-400">Graphisme</span>
+                </div>
+                <div class="tech-card p-6 rounded-2xl flex items-center space-x-4">
+                    <i class="fas fa-film text-slate-400"></i> <span class="text-sm font-bold uppercase tracking-wider text-slate-400">Vidéaste</span>
+                </div>
+                <div class="tech-card p-6 rounded-2xl flex items-center space-x-4">
+                    <i class="fas fa-server text-slate-400"></i> <span class="text-sm font-bold uppercase tracking-wider text-slate-400">Admin Réseau</span>
+                </div>
+                <div class="tech-card p-6 rounded-2xl flex items-center space-x-4">
+                    <i class="fas fa-file-invoice text-slate-400"></i> <span class="text-sm font-bold uppercase tracking-wider text-slate-400">Bureautique</span>
+                </div>
+            </div>
+
+            <div class="mt-8 flex flex-wrap gap-3">
+                <span class="badge-soon px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">IA & Deep Learning</span>
+                <span class="badge-soon px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">Robotique</span>
+                <span class="badge-soon px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">Télécommunications</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="formations" class="py-24 relative">
+        <div class="container mx-auto px-6">
+            <div class="tech-card rounded-[3rem] p-12 md:p-20 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[80px]"></div>
+                <div class="relative z-10 grid md:grid-cols-2 gap-16 items-center">
+                    <div>
+                        <h2 class="text-5xl font-bold mb-6 italic underline decoration-blue-500 decoration-8">Lancement <br>06 Avril</h2>
+                        <p class="text-slate-400 text-lg mb-8">Nous lançons officiellement nos formations intensives. Choisissez votre voie vers l'expertise.</p>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4"><i class="fas fa-check text-blue-500"></i> <span>Bureautique Avancée</span></div>
+                            <div class="flex items-center space-x-4"><i class="fas fa-check text-blue-500"></i> <span>Analyse de Données</span></div>
+                            <div class="flex items-center space-x-4"><i class="fas fa-check text-blue-500"></i> <span>Développement Web</span></div>
+                            <div class="flex items-center space-x-4"><i class="fas fa-check text-blue-500"></i> <span>Graphisme & Design</span></div>
+                            <div class="flex items-center space-x-4 font-bold text-white uppercase tracking-wider italic">
+                                <i class="fas fa-star text-orange-500"></i> <span>Prog. Windows (C#)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="inline-block p-10 rounded-full border border-blue-500/20 bg-blue-500/5 animate-pulse mb-8">
+                            <i class="fas fa-rocket text-7xl text-blue-500"></i>
+                        </div>
+                        <a href="Paiement.html" class="block bg-white text-black px-12 py-5 rounded-2xl font-black text-xl hover:bg-blue-500 hover:text-white transition">RÉSERVER MA PLACE</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="innovation" class="py-20 bg-black">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center space-x-4 mb-12">
+                <div class="h-px bg-white/20 flex-grow"></div>
+                <h2 class="text-2xl font-bold tracking-[0.3em] uppercase opacity-50 italic">Laboratoire R&D</h2>
+                <div class="h-px bg-white/20 flex-grow"></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="group cursor-default">
+                    <h3 class="text-blue-500 text-lg font-bold mb-2">PROJET 01 /</h3>
+                    <h4 class="text-2xl font-bold mb-4 group-hover:text-blue-400 transition italic">Bibliothèque Mondiale Numérique</h4>
+                    <p class="text-slate-500 font-light leading-relaxed">Conception d'un écosystème d'ouvrages numériques accessible partout pour démocratiser le savoir.</p>
+                </div>
+                <div class="group cursor-default">
+                    <h3 class="text-orange-500 text-lg font-bold mb-2">PROJET 02 /</h3>
+                    <h4 class="text-2xl font-bold mb-4 group-hover:text-orange-400 transition italic">Guide Touristique Interactif</h4>
+                    <p class="text-slate-500 font-light leading-relaxed">Système intelligent d'orientation et d'information pour les visiteurs urbains.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-20 border-t border-white/5">
+        <div class="container mx-auto px-6 flex flex-col items-center text-center">
+            <div class="p-1 bg-white rounded-lg mb-8">
+                <img src="LOGO.jpg" alt="Logo MyTech" class="h-12 w-auto" width="20px" height="w-auto">
+            </div>
+            <div class="flex space-x-8 mb-12 text-3xl">
+                <a href="https://chat.whatsapp.com/DiKmbxdo7qLFWh6Eu8cHEz?mode=gi_t" class="hover:text-blue-500 transition"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://www.facebook.com/share/1DkNntoxxv/" class="hover:text-blue-500 transition"><i class="fab fa-facebook-f"></i></a>
+            </div>
+            <p class="text-slate-700 text-xs font-medium tracking-[0.5em] uppercase">
+                © 2026 MYTECH CLUB • FORMER • SERVIR • INNOVER
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>
+

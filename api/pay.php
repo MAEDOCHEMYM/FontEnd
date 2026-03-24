@@ -16,8 +16,8 @@ if ($input) {
     // Nettoyage numéro
     $cleanPhone = str_replace([' ', '+'], '', $phone);
 
-    // ✅ AJOUT DATE HEURE (FORMAT ISO)
-    $customerTimestamp = date('Y-m-d\TH:i:s');
+    // Date ISO avec timezone (important)
+    $customerTimestamp = date('Y-m-d\TH:i:sP');
 
     // CONFIG PAWAPAY
     $apiKey = "eyJraWQiOiIxIiwiYWxnIjoiRVMyNTYifQ.eyJ0dCI6IkFBVCIsInN1YiI6IjE2MTk5IiwibWF2IjoiMSIsImV4cCI6MjA4OTY5OTY3NCwiaWF0IjoxNzc0MDgwNDc0LCJwbSI6IkRBRixQQUYiLCJqdGkiOiI2OTVjZmU5Zi05YWExLTQxNTUtODRjNC0zN2M2MjY1ZTBiNDcifQ.asYDBa_NnVrAtHBubSv5jN3a2y-y0GDBxz3rfDB5TGjUG6rxzwF8WJCJrNALYgPM5TUL-3hCRuFf4EI0cecGYw"; 
@@ -29,7 +29,11 @@ if ($input) {
         "currency" => "USD",
         "correspondent" => $operator,
 
-        "customerTimestamp" => $customerTimestamp, // 🔥 CORRECTION
+        // ✅ NOUVEAU CHAMP OBLIGATOIRE
+        "statementDescription" => "Paiement formation",
+
+        // ✅ TIMESTAMP
+        "customerTimestamp" => $customerTimestamp,
 
         "payer" => [
             "type" => "MSISDN",

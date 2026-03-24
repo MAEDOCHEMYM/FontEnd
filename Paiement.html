@@ -114,8 +114,7 @@
 </div>
 <script>
     // --- CONFIGURATION ---
-   // Remplacez l'ancienne ligne par celle-ci :
-const API_URL = "https://mon-api-php-qfzo.onrender.com/index.php";
+    const API_URL = "https://mon-api-php-qfzo.onrender.com/index.php";
 
     const prefixMap = {
         "+24381": "VODACOM", "+24382": "VODACOM", "+24397": "AIRTEL", "+24399": "AIRTEL", "+24389": "ORANGE", "+24385": "ORANGE", "+24380": "AFRICELL",
@@ -131,13 +130,10 @@ const API_URL = "https://mon-api-php-qfzo.onrender.com/index.php";
     const opCodeInput = document.getElementById('op_code');
     const btnPay = document.getElementById('btnPay');
 
-    // On cache le logo (car on ne veut que le texte)
     document.getElementById('opLogo').style.display = 'none';
 
     function detectOperator() {
         let input = phone.value.trim().replace(/\s/g, ''); 
-        
-        // Ajout automatique du + pour la détection si manquant
         if (input.length > 2 && !input.startsWith('+')) {
             input = '+' + input;
         }
@@ -146,19 +142,15 @@ const API_URL = "https://mon-api-php-qfzo.onrender.com/index.php";
         for (let prefix in prefixMap) {
             if (input.startsWith(prefix)) {
                 const operatorName = prefixMap[prefix];
-                
                 opLabel.innerText = operatorName;
-                // On garde le code technique pour l'API (ex: VODACOM_DRC)
                 opCodeInput.value = operatorName === "VODACOM" ? "VODACOM_DRC" : 
                                    operatorName === "AIRTEL" ? "AIRTEL_DRC" : 
                                    operatorName === "ORANGE" ? "ORANGE_DRC" : operatorName + "_DRC";
-                
                 badge.classList.add('active');
                 matched = true;
                 break;
             }
         }
-
         if (!matched) {
             badge.classList.remove('active');
             opCodeInput.value = ""; 
@@ -187,13 +179,18 @@ const API_URL = "https://mon-api-php-qfzo.onrender.com/index.php";
             return;
         }
 
-        btnPay.innerText = "TRAITEMENT EN COURS...";
+        // --- GESTION DU TIMEOUT (60 SECONDES) ---
+        btnPay.innerText = "RÉVEIL DU SERVEUR (MAX 1 MIN)...";
         btnPay.disabled = true;
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 secondes d'attente
 
         try {
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                signal: controller.signal, // On lie le signal au fetch
                 body: JSON.stringify({
                     client_name: name,
                     amount: document.getElementById('final_amount').value,
@@ -203,6 +200,8 @@ const API_URL = "https://mon-api-php-qfzo.onrender.com/index.php";
                 })
             });
 
+            clearTimeout(timeoutId); // Annuler le timeout si la réponse arrive à temps
+
             const result = await response.json();
             if (result.status === 'SUCCESS') {
                 window.location.href = result.redirectUrl;
@@ -210,7 +209,11 @@ const API_URL = "https://mon-api-php-qfzo.onrender.com/index.php";
                 alert("Erreur : " + result.message);
             }
         } catch (error) {
-            alert("Le serveur Render ne répond pas. Réessayez dans 30 secondes.");
+            if (error.name === 'AbortError') {
+                alert("Le serveur gratuit Render met trop de temps à démarrer. Patientez 10 secondes et cliquez à nouveau, il sera réveillé !");
+            } else {
+                alert("Le serveur ne répond pas. Veuillez vérifier votre connexion ou réessayer.");
+            }
         } finally {
             btnPay.innerText = "LANCER LE PAIEMENT";
             btnPay.disabled = false;

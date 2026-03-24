@@ -113,7 +113,8 @@
         </div>
     </div>
 </div>
-<script>
+ 
+    <script>
 
 const API_URL = "/api/pay.php";
 
@@ -232,6 +233,7 @@ const phone = document.getElementById('phone');
 const badge = document.getElementById('badge');
 const opLabel = document.getElementById('opLabel');
 const opCodeInput = document.getElementById('op_code');
+const btnPay = document.getElementById('btnPay');
 
 /* ✅ Détection opérateur */
 function detectOperator() {
@@ -264,7 +266,72 @@ function detectOperator() {
 
 phone.addEventListener('input', detectOperator);
 
-</script>
-    
+/* ✅ AJOUT : PAIEMENT */
+btnPay.addEventListener('click', async () => {
+
+    const name = document.getElementById('client_name').value.trim();
+    let phoneNumber = phone.value.trim().replace(/\s/g, '');
+
+    if (phoneNumber && !phoneNumber.startsWith('+')) {
+        phoneNumber = '+' + phoneNumber;
+    }
+
+    const operatorCode = opCodeInput.value;
+
+    if (!name || !phoneNumber) {
+        alert("Veuillez remplir votre nom et votre numéro.");
+        return;
+    }
+
+    if (!operatorCode) {
+        alert("Opérateur non reconnu.");
+        return;
+    }
+
+    btnPay.innerText = "RÉVEIL DU SERVEUR...";
+    btnPay.disabled = true;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            signal: controller.signal,
+            body: JSON.stringify({
+                client_name: name,
+                amount: document.getElementById('final_amount').value,
+                phone: phoneNumber,
+                operator: operatorCode,
+                formation: document.getElementById('formation').value
+            })
+        });
+
+        clearTimeout(timeoutId);
+
+        const result = await response.json();
+
+        if (result.status === 'SUCCESS') {
+            window.location.href = result.redirectUrl;
+        } else {
+            alert("Erreur : " + result.message);
+        }
+
+    } catch (error) {
+
+        if (error.name === 'AbortError') {
+            alert("Serveur lent (Render). Réessayez.");
+        } else {
+            alert("Erreur réseau.");
+        }
+
+    } finally {
+        btnPay.innerText = "LANCER LE PAIEMENT";
+        btnPay.disabled = false;
+    }
+});
+
+        </script>
 </body>
 </html>

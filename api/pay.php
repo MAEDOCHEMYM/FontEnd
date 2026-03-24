@@ -13,30 +13,28 @@ if ($input) {
     $operator = $input['operator'] ?? '';
     $ref = "INS-" . time(); 
 
-    // Nettoyage numéro (IMPORTANT)
+    // Nettoyage numéro
     $cleanPhone = str_replace([' ', '+'], '', $phone);
 
-    // 1. EMAIL (optionnel)
-    $to = "mardocheyombu7@gmail.com"; 
-    $subject = "Nouvelle Inscription : $name";
-    $body = "Nom: $name\nTéléphone: $cleanPhone\nFormation: $formation\nMontant: $amount USD\nOpérateur: $operator";
-    @mail($to, $subject, $body);
+    // ✅ AJOUT DATE HEURE (FORMAT ISO)
+    $customerTimestamp = date('Y-m-d\TH:i:s');
 
-    // 2. CONFIG PAWAPAY
+    // CONFIG PAWAPAY
     $apiKey = "eyJraWQiOiIxIiwiYWxnIjoiRVMyNTYifQ.eyJ0dCI6IkFBVCIsInN1YiI6IjE2MTk5IiwibWF2IjoiMSIsImV4cCI6MjA4OTY5OTY3NCwiaWF0IjoxNzc0MDgwNDc0LCJwbSI6IkRBRixQQUYiLCJqdGkiOiI2OTVjZmU5Zi05YWExLTQxNTUtODRjNC0zN2M2MjY1ZTBiNDcifQ.asYDBa_NnVrAtHBubSv5jN3a2y-y0GDBxz3rfDB5TGjUG6rxzwF8WJCJrNALYgPM5TUL-3hCRuFf4EI0cecGYw"; 
     $apiUrl = "https://api.sandbox.pawapay.cloud/v1/deposits";
 
-    // ✅ PAYLOAD CORRIGÉ
     $payload = [
         "depositId" => $ref,
         "amount" => (string)$amount,
         "currency" => "USD",
         "correspondent" => $operator,
 
+        "customerTimestamp" => $customerTimestamp, // 🔥 CORRECTION
+
         "payer" => [
             "type" => "MSISDN",
             "address" => [
-                "value" => $cleanPhone // 🔥 CORRECTION ICI
+                "value" => $cleanPhone
             ]
         ],
 
@@ -59,7 +57,6 @@ if ($input) {
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    // 3. RÉPONSE
     if (isset($resData['redirectUrl'])) {
         echo json_encode([
             "status" => "SUCCESS",

@@ -115,7 +115,9 @@
 
 <script>
     // --- CONFIGURATION ---
-    const API_URL = "https://mon-api-php-qfzo.onrender.com";
+    // Vérifiez bien si votre fichier sur Render est index.php ou pay.php
+    // Si c'est pay.php, ajoutez /pay.php à la fin de l'URL
+    const API_URL = "https://mon-api-php-qfzo.onrender.com"; 
 
     const prefixMap = {
         "+24381": "VODACOM_DRC", "+24382": "VODACOM_DRC", "+24397": "AIRTEL_DRC", "+24399": "AIRTEL_DRC", "+24389": "ORANGE_DRC", "+24380": "AFRICELL_DRC",
@@ -164,15 +166,29 @@
                 break;
             }
         }
-        if (!matched) badge.classList.remove('active');
+        if (!matched) {
+            badge.classList.remove('active');
+            opCodeInput.value = ""; // On vide si non reconnu
+        }
     });
 
-    // Envoi du paiement vers Render
+    // Envoi du paiement
     btnPay.addEventListener('click', async () => {
-        const name = document.getElementById('client_name').value;
-        
-        if (!name || !phone.value || !opCodeInput.value) {
-            alert("Veuillez remplir tous les champs correctement.");
+        const name = document.getElementById('client_name').value.trim();
+        const phoneNumber = phone.value.trim();
+        const operatorCode = opCodeInput.value;
+
+        // VERIFICATION PRECISE
+        if (!name) {
+            alert("Veuillez entrer votre nom complet.");
+            return;
+        }
+        if (!phoneNumber) {
+            alert("Veuillez entrer votre numéro de téléphone.");
+            return;
+        }
+        if (!operatorCode) {
+            alert("Numéro non reconnu. Assurez-vous de commencer par le préfixe pays (ex: +243...)");
             return;
         }
 
@@ -182,8 +198,8 @@
         const dataToSend = {
             client_name: name,
             amount: finalAmount.value,
-            phone: phone.value,
-            operator: opCodeInput.value,
+            phone: phoneNumber,
+            operator: operatorCode,
             formation: formation.value
         };
 
@@ -194,17 +210,17 @@
                 body: JSON.stringify(dataToSend)
             });
 
+            // On vérifie si la réponse est du JSON valide
             const result = await response.json();
 
             if (result.status === 'SUCCESS' && result.redirectUrl) {
-                // Redirection vers la page de paiement PawaPay
                 window.location.href = result.redirectUrl;
             } else {
-                alert("Erreur: " + (result.message || "Échec de l'initialisation"));
+                alert("Erreur: " + (result.message || "Échec de l'opération"));
             }
         } catch (error) {
             console.error("Erreur:", error);
-            alert("Erreur de réseau. Vérifiez que votre API Render est active.");
+            alert("Impossible de joindre le serveur. Vérifiez votre connexion ou l'état de votre API sur Render.");
         } finally {
             btnPay.innerText = "LANCER LE PAIEMENT";
             btnPay.disabled = false;

@@ -1,232 +1,70 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paiement Formation | Inscription</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .bg-soft { background-color: #f8fafc; }
-        .input-elegant {
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid #e2e8f0;
-            border-radius: 0;
-            transition: all 0.3s ease;
-        }
-        .input-elegant:focus {
-            border-bottom-color: #4f46e5;
-            box-shadow: none;
-        }
-        .operator-float {
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform: translateY(10px);
-            opacity: 0;
-        }
-        .operator-float.active {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paiement Formation</title>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-white min-h-screen">
+<body class="bg-gray-100 p-6">
 
-<div class="flex flex-col md:flex-row min-h-screen">
-    
-    <div class="hidden md:flex md:w-1/2 bg-indigo-600 p-12 flex-col justify-between text-white relative overflow-hidden">
-        <div class="relative z-10">
-            <h1 class="text-5xl font-extrabold leading-tight">Boostez votre <br>carrière dès aujourd'hui.</h1>
-            <p class="mt-6 text-indigo-100 text-lg max-w-md">Rejoignez plus de 5000 étudiants en Afrique. Apprenez les compétences les plus demandées sur le marché.</p>
-        </div>
-        
-        <div class="relative z-10 bg-white/10 backdrop-blur-lg p-6 rounded-2xl border border-white/20">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-indigo-400 rounded-full flex items-center justify-center font-bold">✓</div>
-                <div>
-                    <p class="font-bold text-lg">Certification incluse</p>
-                    <p class="text-sm text-indigo-200">Reconnue par les entreprises locales et internationales.</p>
-                </div>
-            </div>
-        </div>
+<div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow">
+    <h2 class="text-xl font-bold mb-4">Paiement Formation</h2>
 
-        <div class="absolute -bottom-20 -left-20 w-96 h-96 bg-indigo-500 rounded-full blur-3xl opacity-50"></div>
+    <input id="client_name" type="text" placeholder="Nom complet"
+        class="w-full mb-3 p-2 border rounded">
+
+    <input id="email" type="email" placeholder="Email"
+        class="w-full mb-3 p-2 border rounded">
+
+    <input id="phone" type="text" placeholder="+243..."
+        class="w-full mb-3 p-2 border rounded">
+
+    <input id="final_amount" type="number" placeholder="Montant USD"
+        class="w-full mb-3 p-2 border rounded">
+
+    <input id="formation" type="text" placeholder="Nom de la formation"
+        class="w-full mb-3 p-2 border rounded">
+
+    <!-- Opérateur détecté -->
+    <div id="badge" class="hidden bg-green-100 p-2 rounded mb-3">
+        Opérateur : <span id="opLabel"></span>
     </div>
 
-    <div class="w-full md:w-1/2 p-8 md:p-24 flex flex-col justify-center">
-        <div class="max-w-md mx-auto w-full">
-            <div class="mb-10">
-                <h2 class="text-3xl font-extrabold text-slate-900">Finalisez votre inscription</h2>
-                <p class="text-slate-500 mt-2">Remplissez les détails pour activer votre accès.</p>
-            </div>
+    <input type="hidden" id="op_code">
 
-            <form id="paymentForm" class="space-y-8">
-                <div class="group">
-                    <label class="text-xs font-bold text-indigo-600 uppercase tracking-widest">Nom Complet</label>
-                    <input type="text" name="client_name" id="client_name" required placeholder="Ex: Philippe Kabeya" 
-                           class="w-full input-elegant py-3 outline-none">
-                </div>
-
-                <div>
-                    <label class="text-xs font-bold text-indigo-600 uppercase tracking-widest">Formation choisie</label>
-                    <select name="formation" id="formation" class="w-full mt-2 py-3 bg-transparent border-b-2 border-slate-200 outline-none cursor-pointer font-semibold text-slate-700">
-                        <option value="Bureautique" data-price="10">Bureautique (10$)</option>
-                        <option value="Conception" data-price="10">Conception (10$)</option>
-                        <option value="Web" data-price="15">Conception site Web (15$)</option>
-                        <option value="Data" data-price="15">Analyse de données (15$)</option>
-                        <option value="CSharp" data-price="15">Programmation OO C# (15$)</option>
-                    </select>
-                </div>
-
-                <div class="relative">
-                    <label class="text-xs font-bold text-indigo-600 uppercase tracking-widest">Numéro Mobile (Mobile Money)</label>
-                    <input type="tel" id="phone" name="phone" required placeholder="+243..." 
-                           class="w-full input-elegant py-3 outline-none font-mono text-lg">
-                    
-                    <div id="badge" class="operator-float absolute right-0 bottom-3 flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
-                        <img id="opLogo" src="" class="w-5 h-5 object-contain">
-                        <span id="opLabel" class="text-[10px] font-black text-slate-600 uppercase"></span>
-                    </div>
-                </div>
-
-                <div class="pt-6">
-                    <div class="flex justify-between items-end mb-6">
-                        <span class="text-slate-500 font-medium">Montant de l'investissement :</span>
-                        <span id="priceLabel" class="text-4xl font-extrabold text-slate-900">10$</span>
-                    </div>
-
-                    <input type="hidden" name="final_amount" id="final_amount" value="10">
-                    <input type="hidden" name="op_code" id="op_code">
-
-                    <button type="button" id="btnPay" class="w-full bg-slate-900 hover:bg-indigo-600 text-white font-bold py-5 rounded-2xl transition-all shadow-xl hover:shadow-indigo-200 active:scale-95">
-                        LANCER LE PAIEMENT
-                    </button>
-                    
-                    <p class="text-center text-xs text-slate-400 mt-6 flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
-                        Paiement sécurisé par PawaPay Africa
-                    </p>
-                </div>
-            </form>
-        </div>
-    </div>
+    <button id="btnPay"
+        class="w-full bg-blue-600 text-white p-2 rounded">
+        LANCER LE PAIEMENT
+    </button>
 </div>
- 
-    <script>
 
+<script>
 const API_URL = "/api/pay.php";
 
-/* ✅ Correspondants OFFICIELS Pawapay */
+/* Codes opérateurs Pawapay */
 const prefixMap = {
-
-    // 🇨🇩 RDC
     "+24381": "VODACOM_MPESA_COD",
     "+24382": "VODACOM_MPESA_COD",
     "+24383": "VODACOM_MPESA_COD",
     "+24384": "VODACOM_MPESA_COD",
-    "+24385": "ORANGE_COD",
-    "+24389": "ORANGE_COD",
     "+24397": "AIRTEL_COD",
     "+24399": "AIRTEL_COD",
+    "+24389": "ORANGE_COD",
+    "+24385": "ORANGE_COD",
     "+24380": "AFRICELL_COD",
-
-    // 🇰🇪 Kenya
-    "+2547": "SAFARICOM_KEN",
-
-    // 🇺🇬 Ouganda
-    "+25677": "MTN_UGA",
-    "+25678": "MTN_UGA",
-    "+25675": "AIRTEL_UGA",
-    "+25670": "AIRTEL_UGA",
-
-    // 🇹🇿 Tanzanie
-    "+25574": "VODACOM_TZA",
-    "+25575": "VODACOM_TZA",
-    "+25576": "TIGO_TZA",
-    "+25571": "AIRTEL_TZA",
-    "+25565": "TIGO_TZA",
-    "+25567": "HALOTEL_TZA",
-
-    // 🇷🇼 Rwanda
-    "+25078": "MTN_RWA",
-    "+25079": "AIRTEL_RWA",
-
-    // 🇿🇲 Zambie
-    "+26097": "MTN_ZMB",
-    "+26096": "MTN_ZMB",
-    "+26095": "AIRTEL_ZMB",
-    "+26077": "AIRTEL_ZMB",
-    "+26076": "ZAMTEL_ZMB",
-
-    // 🇲🇼 Malawi
-    "+26599": "AIRTEL_MWI",
-    "+26588": "TNM_MWI",
-
-    // 🇲🇿 Mozambique
-    "+25884": "VODACOM_MOZ",
-    "+25885": "VODACOM_MOZ",
-    "+25882": "MOVITEL_MOZ",
-    "+25886": "TMCEL_MOZ",
-
-    // 🇬🇭 Ghana
-    "+23324": "MTN_GHA",
-    "+23354": "MTN_GHA",
-    "+23355": "MTN_GHA",
-    "+23320": "VODAFONE_GHA",
-    "+23350": "AIRTELTIGO_GHA",
-
-    // 🇧🇯 Bénin
     "+22997": "MTN_BEN",
     "+22996": "MTN_BEN",
     "+22995": "MOOV_BEN",
-
-    // 🇨🇮 Côte d’Ivoire
+    "+22177": "ORANGE_SEN",
+    "+22178": "ORANGE_SEN",
+    "+22170": "FREE_SEN",
+    "+22176": "EXPRESSO_SEN",
     "+22507": "ORANGE_CIV",
     "+22505": "MTN_CIV",
     "+22501": "MOOV_CIV",
-
-    // 🇸🇳 Sénégal
-    "+22177": "ORANGE_SEN",
-    "+22178": "ORANGE_SEN",
-    "+22176": "EXPRESSO_SEN",
-    "+22170": "FREE_SEN",
-
-    // 🇨🇲 Cameroun
     "+23767": "MTN_CMR",
-    "+23768": "MTN_CMR",
-    "+23769": "ORANGE_CMR",
-
-    // 🇹🇬 Togo
-    "+22890": "TOGOCEL_TGO",
-    "+22891": "TOGOCEL_TGO",
-    "+22892": "MOOV_TGO",
-
-    // 🇬🇦 Gabon
-    "+24106": "AIRTEL_GAB",
-    "+24107": "MOOV_GAB",
-
-    // 🇨🇬 Congo Brazzaville
-    "+24206": "AIRTEL_COG",
-    "+24205": "MTN_COG",
-
-    // 🇸🇱 Sierra Leone
-    "+23276": "AIRTEL_SLE",
-    "+23277": "AFRICELL_SLE",
-
-    // 🇲🇬 Madagascar
-    "+26134": "AIRTEL_MDG",
-    "+26133": "ORANGE_MDG",
-
-    // 🇪🇹 Éthiopie
-    "+25191": "ETHIOPIA_TELECOM",
-
-    // 🇳🇬 Nigeria
-    "+23480": "MTN_NGA",
-    "+23481": "MTN_NGA",
-    "+23470": "AIRTEL_NGA",
-    "+23490": "AIRTEL_NGA"
+    "+23769": "ORANGE_CMR"
 };
 
 const phone = document.getElementById('phone');
@@ -235,41 +73,17 @@ const opLabel = document.getElementById('opLabel');
 const opCodeInput = document.getElementById('op_code');
 const btnPay = document.getElementById('btnPay');
 
-const formationSelect = document.getElementById('formation');
-const priceLabel = document.getElementById('priceLabel');
-const finalAmountInput = document.getElementById('final_amount');
-
-// Mettre à jour le prix quand on change de formation
-formationSelect.addEventListener('change', function() {
-    // On récupère l'attribut data-price de l'option choisie
-    const selectedOption = this.options[this.selectedIndex];
-    const price = selectedOption.getAttribute('data-price');
-    
-    // On met à jour l'affichage (le texte 10$ -> 15$)
-    priceLabel.innerText = price + "$";
-    
-    // On met à jour la valeur cachée qui est envoyée au PHP
-    finalAmountInput.value = price;
-});
-
-        
-/* ✅ Détection opérateur */
+/* Détection opérateur */
 function detectOperator() {
     let input = phone.value.trim().replace(/\s/g, '');
-
-    if (input.length > 2 && !input.startsWith('+')) {
-        input = '+' + input;
-    }
+    if (input.length > 2 && !input.startsWith('+')) input = '+' + input;
 
     let matched = false;
-
     for (let prefix in prefixMap) {
         if (input.startsWith(prefix)) {
             const operatorCode = prefixMap[prefix];
-
             opLabel.innerText = operatorCode;
             opCodeInput.value = operatorCode;
-
             badge.classList.remove('hidden');
             matched = true;
             break;
@@ -281,33 +95,25 @@ function detectOperator() {
         opCodeInput.value = "";
     }
 }
-
 phone.addEventListener('input', detectOperator);
 
-/* ✅ AJOUT : PAIEMENT */
+/* Paiement via fetch AJAX */
 btnPay.addEventListener('click', async () => {
-amount: document.getElementById('final_amount').value,
-
     const name = document.getElementById('client_name').value.trim();
+    const email = document.getElementById('email').value.trim();
     let phoneNumber = phone.value.trim().replace(/\s/g, '');
-
-    if (phoneNumber && !phoneNumber.startsWith('+')) {
-        phoneNumber = '+' + phoneNumber;
-    }
+    if (phoneNumber && !phoneNumber.startsWith('+')) phoneNumber = '+' + phoneNumber;
 
     const operatorCode = opCodeInput.value;
+    const amount = document.getElementById('final_amount').value;
+    const formation = document.getElementById('formation').value.trim();
 
-    if (!name || !phoneNumber) {
-        alert("Veuillez remplir votre nom et votre numéro.");
+    if (!name || !email || !phoneNumber || !amount) {
+        alert("Veuillez remplir tous les champs obligatoires.");
         return;
     }
 
-    if (!operatorCode) {
-        alert("Opérateur non reconnu.");
-        return;
-    }
-
-    btnPay.innerText = "RÉVEIL DU SERVEUR...";
+    btnPay.innerText = "PATIENTEZ...";
     btnPay.disabled = true;
 
     const controller = new AbortController();
@@ -320,10 +126,11 @@ amount: document.getElementById('final_amount').value,
             signal: controller.signal,
             body: JSON.stringify({
                 client_name: name,
-                amount: document.getElementById('final_amount').value,
+                email: email,
                 phone: phoneNumber,
-                operator: operatorCode,
-                formation: document.getElementById('formation').value
+                amount: amount,
+                formation: formation,
+                operator: operatorCode
             })
         });
 
@@ -334,23 +141,22 @@ amount: document.getElementById('final_amount').value,
         if (result.status === 'SUCCESS') {
             window.location.href = result.redirectUrl;
         } else {
-            alert("Erreur : " + result.message);
+            alert("Erreur : " + (result.message || "Problème lors du paiement"));
+            console.log(result.debug);
         }
 
     } catch (error) {
-
         if (error.name === 'AbortError') {
-            alert("Serveur lent (Render). Réessayez.");
+            alert("Serveur lent. Réessayez dans 10 secondes.");
         } else {
             alert("Erreur réseau.");
         }
-
     } finally {
         btnPay.innerText = "LANCER LE PAIEMENT";
         btnPay.disabled = false;
     }
 });
+</script>
 
-        </script>
 </body>
 </html>

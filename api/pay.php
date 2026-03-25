@@ -1,94 +1,92 @@
 <?php
-header("Access-Control-Allow-Origin: *");
+
 header("Content-Type: application/json");
 
-// Générateur UUID (36 caractères)
-function generateUUID() {
-    return sprintf(
-        '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-        mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-        mt_rand(0, 0xffff),
-        mt_rand(0, 0x0fff) | 0x4000,
-        mt_rand(0, 0x3fff) | 0x8000,
-        mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
-    );
+// 🔐 Ta clé Flutterwave (remplace)
+$secret_key = "FLWSECK_TEST-06ec1156cc90e6a43b9129066e134221-X";
+
+// 📥 Lire JSON (envoyé par fetch)
+$input = json_decode(file_get_contents("php://input"), true);
+
+// 🧾 Récupération (comme ton frontend)
+$name       = $input['client_name'] ?? '';
+$phone      = $input['phone'] ?? '';
+$amount     = $input['amount'] ?? '';
+$formation  = $input['formation'] ?? '';
+$operator   = $input['operator'] ?? ''; // pas utilisé ici mais gardé
+
+// ⚠️ Validation
+if(empty($name) || empty($phone) || empty($amount)){
+    echo json_encode([
+        "status" => "ERROR",
+        "message" => "Champs requis manquants"
+    ]);
+    exit;
 }
 
-// Récupération des données
-$input = json_decode(file_get_contents('php://input'), true);
+// 🆔 Référence unique
+$tx_ref = "TX_" . time();
 
-if ($input) {
-    $name = $input['client_name'] ?? 'Client';
-    $phone = $input['phone'] ?? ''; 
-    $amount = $input['amount'] ?? '0';
-    $formation = $input['formation'] ?? 'Formation';
-    $operator = $input['operator'] ?? '';
+// 📦 Données Flutterwave
+$data = [
+    "tx_ref" => $tx_ref,
+    "amount" => $amount,
+    "currency" => "USD",
+    "redirect_url" => "https://tonsite.com/success.php",
 
-    // UUID obligatoire (36 caractères)
-    $ref = generateUUID();
+    "customer" => [
+        "email" => "client@email.com", // ⚠️ Flutterwave exige email
+        "phonenumber" => $phone,
+        "name" => $name
+    ],
 
-    // Nettoyage numéro
-    $cleanPhone = str_replace([' ', '+'], '', $phone);
+    "customizations" => [
+        "title" => "Paiement Formation",
+        "description" => $formation ?: "Paiement formation"
+    ]
+];
 
-    // Timestamp ISO avec timezone
-    $customerTimestamp = date('Y-m-d\TH:i:sP');
+// 🚀 Appel API Flutterwave
+$ch = curl_init();
 
-    // CONFIG PAWAPAY
-    $apiKey = "eyJraWQiOiIxIiwiYWxnIjoiRVMyNTYifQ.eyJ0dCI6IkFBVCIsInN1YiI6IjE2MTk5IiwibWF2IjoiMSIsImV4cCI6MjA4OTY5OTY3NCwiaWF0IjoxNzc0MDgwNDc0LCJwbSI6IkRBRixQQUYiLCJqdGkiOiI2OTVjZmU5Zi05YWExLTQxNTUtODRjNC0zN2M2MjY1ZTBiNDcifQ.asYDBa_NnVrAtHBubSv5jN3a2y-y0GDBxz3rfDB5TGjUG6rxzwF8WJCJrNALYgPM5TUL-3hCRuFf4EI0cecGYw";
-    $apiUrl = "https://api.sandbox.pawapay.cloud/v1/deposits";
+curl_setopt($ch, CURLOPT_URL, "https://api.flutterwave.com/v3/payments");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 
-    // PAYLOAD COMPLET
-    $payload = [
-        "depositId" => $ref,
-        "amount" => (string)$amount,
-        "currency" => "USD",
-        "correspondent" => $operator,
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    "Authorization: Bearer $secret_key",
+    "Content-Type: application/json"
+]);
 
-        "statementDescription" => "Formation " . $formation,
-        "customerTimestamp" => $customerTimestamp,
+$response = curl_exec($ch);
 
-        "payer" => [
-            "type" => "MSISDN",
-            "address" => [
-                "value" => $cleanPhone
-            ]
-        ],
-
-        "customerFirstName" => $name,
-        "customerLastName" => "Client",
-        "description" => "Paiement Formation $formation"
-    ];
-
-    $ch = curl_init($apiUrl);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        "Authorization: Bearer $apiKey",
-        "Content-Type: application/json"
+if(curl_errno($ch)){
+    echo json_encode([
+        "status" => "ERROR",
+        "message" => curl_error($ch)
     ]);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-    $response = curl_exec($ch);
-    $resData = json_decode($response, true);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
+    exit;
+}
 
-    if (isset($resData['redirectUrl'])) {
-        echo json_encode([
-            "status" => "SUCCESS",
-            "redirectUrl" => $resData['redirectUrl']
-        ]);
-    } else {
-        $errorMsg = $resData['errorMessage'] ?? ($resData['message'] ?? json_encode($resData));
-        echo json_encode([
-            "status" => "ERROR",
-            "message" => "PawaPay ($httpCode) : " . $errorMsg
-        ]);
-    }
+curl_close($ch);
+
+// 📊 Analyse réponse
+$result = json_decode($response, true);
+
+// 🔁 Retour EXACT pour ton JS
+if(isset($result['data']['link'])){
+    echo json_encode([
+        "status" => "SUCCESS",
+        "redirectUrl" => $result['data']['link']
+    ]);
 } else {
     echo json_encode([
         "status" => "ERROR",
-        "message" => "Aucune donnée reçue"
+        "message" => $result['message'] ?? "Erreur Flutterwave",
+        "debug" => $result
     ]);
 }
-exit;
+
+?>
